@@ -1,0 +1,117 @@
+.subscription-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  text-align: center;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.subscription-container h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  color: #2c3e50;
+}
+
+.subscription-container p {
+  font-size: 1.1rem;
+  color: #555;
+  margin-bottom: 40px;
+}
+
+.plans {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.plan-card {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 15px;
+  padding: 30px 20px;
+  width: 300px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.plan-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+}
+
+.plan-card h2 {
+  font-size: 1.8rem;
+  color: #333;
+}
+
+.plan-card h3 {
+  font-size: 1.4rem;
+  margin: 10px 0 20px;
+  color: #4a90e2;
+}
+
+.plan-card ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 25px;
+  text-align: left;
+}
+
+.plan-card ul li {
+  margin: 8px 0;
+  font-size: 1rem;
+  color: #444;
+}
+
+.subscribe-btn {
+  background-color: #4a90e2;
+  color: #fff;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: background 0.3s ease;
+}
+
+.subscribe-btn:hover {
+  background-color: #357abd;
+}
+
+.recommended {
+  border: 2px solid #f39c12;
+  position: relative;
+}
+
+.recommended .tag {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background-color: #f39c12;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  font-size: 0.85rem;
+}
+
+
+.trial-note {
+  color: #28a745;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+
+.coming-soon-banner {
+  background-color: #fff3cd;
+  color: #856404;
+  padding: 15px;
+  border-left: 5px solid #ffc107;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+}

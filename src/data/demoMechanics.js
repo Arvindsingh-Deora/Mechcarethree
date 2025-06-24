@@ -1,0 +1,86 @@
+// src/data/demoMechanics.js
+
+const demoMechanics = [
+  {
+    shopName: "RK Auto Garage",
+    ownerName: "Rajesh Kumar",
+    lat: 20.6105,
+    lng: 72.9284,
+    phone: "98250XXXXX",
+    address: "Station Road, Valsad",
+  },
+  {
+    shopName: "Vapi Motor Works",
+    ownerName: "Bhavin Patel",
+    lat: 20.3701,
+    lng: 72.9045,
+    phone: "95120XXXXX",
+    address: "Main Road, Vapi",
+  },
+  {
+    shopName: "Shree Auto Repair",
+    ownerName: "Nilesh Rana",
+    lat: 20.6109,
+    lng: 72.9277,
+    phone: "98980XXXXX",
+    address: "Tithal Road, Valsad",
+  },
+  {
+    shopName: "Jai Hind Garage",
+    ownerName: "Hasmukh Bhai",
+    lat: 20.3750,
+    lng: 72.9102,
+    phone: "98985XXXXX",
+    address: "GIDC, Vapi",
+  },
+  {
+    shopName: "Ganesh Auto Service",
+    ownerName: "Pankaj Chauhan",
+    lat: 20.6201,
+    lng: 72.9322,
+    phone: "94280XXXXX",
+    address: "Abrama, Valsad",
+  },
+  {
+    shopName: "FastFix Car Clinic",
+    ownerName: "Mitesh Modi",
+    lat: 20.3699,
+    lng: 72.9123,
+    phone: "95121XXXXX",
+    address: "Gunjan, Vapi",
+  },
+  {
+    shopName: "Super Auto Garage",
+    ownerName: "Amit Solanki",
+    lat: 20.6205,
+    lng: 72.9390,
+    phone: "95740XXXXX",
+    address: "Killa-Pardi Road",
+  },
+  {
+    shopName: "Perfect Car Repair",
+    ownerName: "Dipesh Mehta",
+    lat: 20.6012,
+    lng: 72.9188,
+    phone: "98765XXXXX",
+    address: "Valsad West",
+  },
+  {
+    shopName: "Reliable Motors",
+    ownerName: "Rakesh Joshi",
+    lat: 20.3711,
+    lng: 72.9117,
+    phone: "96385XXXXX",
+    address: "Chanod, Vapi",
+  },
+  {
+    shopName: "Om Auto Works",
+    ownerName: "Parth Bhatt",
+    lat: 20.6121,
+    lng: 72.9201,
+    phone: "94270XXXXX",
+    address: "Tithal Bypass, Valsad",
+  },
+];
+
+export default demoMechanics;

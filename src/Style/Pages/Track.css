@@ -1,0 +1,25 @@
+/* src/Style/Pages/Track.css */
+
+.track-container {
+  padding: 1rem;
+  background: #f9f9fc;
+  font-family: "Segoe UI", sans-serif;
+  text-align: center;
+}
+
+.track-container h2 {
+  margin-bottom: 1rem;
+  font-size: 2rem;
+  color: #333;
+}
+
+.info-panel {
+  margin: 10px auto;
+  background: #fffbe6;
+  padding: 10px 15px;
+  width: fit-content;
+  border: 1px solid #ffd666;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  color: #7c5700;
+}

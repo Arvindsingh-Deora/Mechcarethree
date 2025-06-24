@@ -1,0 +1,21 @@
+.tutorials-page {
+    padding: 30px;
+    text-align: center;
+  }
+  
+  .video-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 20px;
+  }
+  
+  .video-grid iframe {
+    width: 350px;
+    height: 200px;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  
