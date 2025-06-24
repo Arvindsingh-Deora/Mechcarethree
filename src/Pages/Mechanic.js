@@ -91,7 +91,7 @@ const handleRequest = (shop) => {
         userPhone: currentUser.phoneNumber || "Not Provided"
       };
 
-      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/requests, data`);
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/requests`, data);
       alert("✅ Help request sent to mechanic!");
       setSelectedMechanic(null);
       setProblemDescription('');
