@@ -1,6 +1,7 @@
 // src/Pages/Firebase.js
 import { initializeApp, getApps } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth"; // ✅ Add this line
+import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCyqPvxx5Dt920R9FnWH7GQFgCmA-mcBKU",
@@ -9,6 +10,7 @@ const firebaseConfig = {
   storageBucket: "mechcare-vnvyr.appspot.com",
   messagingSenderId: "82372060869",
   appId: "1:82372060869:web:0e0679f410141118ed32ac",
+  measurementId: "G-0PW0VSV0KX"
 };
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
