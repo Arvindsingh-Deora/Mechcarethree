@@ -1,3 +1,4 @@
+// src/Pages/Login.js
 import React, { useState, useEffect } from "react";
 import {
   GoogleAuthProvider,
@@ -5,7 +6,7 @@ import {
   RecaptchaVerifier,
   signInWithPhoneNumber,
 } from "firebase/auth";
-import { auth } from "./Firebase";
+import { auth } from "../Pages/Firebase";
 import { useNavigate } from "react-router-dom";
 import "../Style/Login.css";
 
@@ -17,31 +18,30 @@ const Login = () => {
   const [otpStatus, setOtpStatus] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Google Login
+  // ✅ Google Sign-in
   const handleGoogleLogin = async () => {
-    const provider = new GoogleAuthProvider();
     try {
+      const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
-      alert(`🎉 Welcome ${result.user.displayName}`);
+      alert(`✅ Welcome, ${result.user.displayName}`);
       navigate("/Dashboard");
     } catch (err) {
-      console.error("Google login failed:", err);
-      alert("Login failed: " + err.message);
+      alert("Google login failed: " + err.message);
     }
   };
 
-  // Setup reCAPTCHA (widget)
+  // ✅ Setup reCAPTCHA
   const setupRecaptcha = () => {
-    if (!window.recaptchaVerifier) {
+    if (!window.recaptchaVerifier && window.grecaptcha) {
       window.recaptchaVerifier = new RecaptchaVerifier(
         "recaptcha-container",
         {
           size: "normal",
           callback: () => {
-            console.log("✅ reCAPTCHA solved");
+            console.log("✅ reCAPTCHA passed");
           },
           "expired-callback": () => {
-            console.warn("⚠️ reCAPTCHA expired");
+            console.log("⚠️ reCAPTCHA expired");
           },
         },
         auth
@@ -53,53 +53,47 @@ const Login = () => {
     }
   };
 
-  // Send OTP
+  // ✅ Send OTP
   const sendOTP = async () => {
     setOtpStatus("");
-    if (!phone.startsWith("+91") || phone.length !== 13) {
-      return setOtpStatus("❌ Please enter valid +91 phone number.");
+    if ( phone.length !== 10) {
+      return setOtpStatus("❌ Please enter a valid +91 phone number.");
     }
 
     setLoading(true);
+    setupRecaptcha();
+
     try {
-      setupRecaptcha();
       const appVerifier = window.recaptchaVerifier;
       const result = await signInWithPhoneNumber(auth, phone, appVerifier);
       setConfirmationResult(result);
-      setOtpStatus("📨 OTP sent successfully!");
-    } catch (err) {
-      console.error("❌ OTP error:", err);
-      setOtpStatus("❌ OTP not sent: " + err.message);
-      try {
-        window.recaptchaVerifier.render().then((widgetId) => {
-          window.grecaptcha.reset(widgetId);
-        });
-      } catch (e) {
-        console.warn("Couldn't reset reCAPTCHA:", e);
-      }
+      setOtpStatus("✅ OTP sent successfully!");
+    } catch (error) {
+      setOtpStatus("❌ Failed to send OTP: " + error.message);
     } finally {
       setLoading(false);
     }
   };
 
-  // Verify OTP
+  // ✅ Verify OTP
   const verifyOTP = async () => {
-    if (!otp) return setOtpStatus("❌ Please enter the OTP.");
-    if (!confirmationResult) return setOtpStatus("❌ OTP not sent yet.");
+    if (!otp || !confirmationResult) {
+      return setOtpStatus("❌ Please enter OTP after sending it.");
+    }
 
     setLoading(true);
     try {
       await confirmationResult.confirm(otp);
       alert("✅ Phone verified successfully!");
       navigate("/Dashboard");
-    } catch (err) {
-      console.error("❌ Invalid OTP:", err);
+    } catch (error) {
       setOtpStatus("❌ Invalid OTP");
     } finally {
       setLoading(false);
     }
   };
 
+  // 🔄 Cleanup reCAPTCHA on component unmount
   useEffect(() => {
     return () => {
       if (window.recaptchaVerifier) {
@@ -123,7 +117,7 @@ const Login = () => {
 
         <input
           type="tel"
-          placeholder="📱 Enter Phone (+91...)"
+          placeholder="📱 +91 Phone Number"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
         />
@@ -148,9 +142,8 @@ const Login = () => {
         {otpStatus && (
           <p
             style={{
-              color: otpStatus.startsWith("❌") ? "red" : "green",
+              color: otpStatus.includes("❌") ? "red" : "green",
               marginTop: "10px",
-              fontWeight: 500,
             }}
           >
             {otpStatus}
