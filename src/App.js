@@ -11,6 +11,7 @@ import Login from "./Pages/Login"; // 👈 Add this
 import Payment from "./Pages/Payment";
 import Track from "./Pages/Track";
 import Subscription from "./Pages/Subscription";
+import PhoneAuth from "./Pages/PhoneAuth";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/Login" element={<Login />} /> {/* 👈 Add this */}
+          <Route path="/PhoneAuth" element={<PhoneAuth/>} /> {/* 👈 Add this */}
           <Route path="/dashboard" element={<Dashboard />} />
           < Route path = "/Subscrption" element = { <Subscription />} />
           <Route path="/mechanics" element={<MechanicList />} />

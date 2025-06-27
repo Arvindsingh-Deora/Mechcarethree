@@ -1,3 +1,4 @@
+// src/Pages/Profile.js
 import React, { useEffect, useState } from "react";
 import { auth } from "../Pages/Firebase";
 import { onAuthStateChanged } from "firebase/auth";
@@ -16,7 +17,7 @@ const Profile = () => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser || null);
       if (currentUser) {
-        fetchUserProfile(currentUser.uid);
+        fetchUserProfile(currentUser.uid, currentUser);
       } else {
         setLoadingProfile(false);
       }
@@ -24,23 +25,19 @@ const Profile = () => {
     return () => unsubscribe();
   }, []);
 
-  const fetchUserProfile = async (uid) => {
+  const fetchUserProfile = async (uid, currentUser) => {
     setLoadingProfile(true);
     try {
-      console.log("Fetching profile for uid:", uid);
       const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/users/get-profile/${uid}`);
-      console.log("Profile fetch response status:", res.status);
       if (res.ok) {
         const data = await res.json();
-        console.log("Fetched profile data:", data);
-        setPhone(data?.phone || "");
+        setPhone(data?.phone || currentUser?.phoneNumber || "");
         setVehicle(data?.vehicle || "");
         setLocation(data?.location || "");
         setIsEditing(!data);
       } else if (res.status === 404) {
-        console.log("Profile not found (404), entering edit mode.");
         setIsEditing(true);
-        setPhone("");
+        setPhone(currentUser?.phoneNumber || "");
         setVehicle("");
         setLocation("");
       } else {
@@ -58,28 +55,32 @@ const Profile = () => {
   const handleSave = async () => {
     if (!user) return alert("Please login first.");
     setError("");
-    if (!phone.trim()) {
+
+    const finalPhone = phone || user.phoneNumber;
+    if (!finalPhone.trim()) {
       setError("Please enter a phone number.");
       return;
     }
+
     try {
       const profileData = {
         uid: user.uid,
-        name: user.displayName,
-        email: user.email,
-        photoURL: user.photoURL,
-        phone,
+        name: user.displayName || "",
+        email: user.email || "",
+        photoURL: user.photoURL || "",
+        phone: finalPhone,
         vehicle,
         location,
       };
-      console.log("Saving profile data:", profileData);
+
       const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/users/save-profile`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(profileData),
       });
-      console.log("Save profile response status:", res.status);
+
       if (!res.ok) throw new Error(`Failed to save profile: ${res.status}`);
+
       alert("✅ Profile saved successfully!");
       setIsEditing(false);
     } catch (err) {
@@ -106,9 +107,10 @@ const Profile = () => {
           <>
             {user.photoURL && <img className="profile-img" src={user.photoURL} alt="Profile" />}
             <div className="profile-info">
-              <p><strong>Name:</strong> {user.displayName}</p>
-              <p><strong>Email:</strong> {user.email}</p>
+              <p><strong>Name:</strong> {user.displayName || "N/A"}</p>
+              <p><strong>Email:</strong> {user.email || "N/A"}</p>
             </div>
+
             {isEditing ? (
               <>
                 <div className="form-group">
@@ -146,7 +148,7 @@ const Profile = () => {
             ) : (
               <>
                 <div className="form-group">
-                  <p><strong>📞 Phone:</strong> {phone || "Not provided"}</p>
+                  <p><strong>📞 Phone:</strong> {phone || user.phoneNumber || "Not provided"}</p>
                   <p><strong>🚗 Vehicle:</strong> {vehicle || "Not provided"}</p>
                   <p><strong>📍 Location:</strong> {location || "Not provided"}</p>
                 </div>
@@ -155,6 +157,7 @@ const Profile = () => {
                 </button>
               </>
             )}
+
             {error && !isEditing && <p className="error-text">⚠️ {error}</p>}
           </>
         ) : (

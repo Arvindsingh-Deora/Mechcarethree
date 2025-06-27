@@ -37,3 +37,25 @@
   margin-top: 20px;
   color: #333;
 }
+
+
+input {
+  padding: 8px;
+  margin: 8px 0;
+  width: 100%;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+button {
+  padding: 10px;
+  margin: 6px 0;
+  width: 100%;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+hr {
+  margin: 20px 0;
+}
