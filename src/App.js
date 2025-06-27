@@ -11,7 +11,7 @@ import Login from "./Pages/Login"; // 👈 Add this
 import Payment from "./Pages/Payment";
 import Track from "./Pages/Track";
 import Subscription from "./Pages/Subscription";
-import PhoneAuth from "./Pages/PhoneAuth";
+
 
 function App() {
   return (

@@ -56,8 +56,7 @@ const Login = () => {
   // ✅ Send OTP
   const sendOTP = async () => {
     setOtpStatus("");
-     if (!phone.startsWith("+91") || phone.length !== 13) {
- {
+    if (!phone.startsWith("+91") || phone.length !== 13) {
       return setOtpStatus("❌ Please enter a valid +91 phone number.");
     }
 
