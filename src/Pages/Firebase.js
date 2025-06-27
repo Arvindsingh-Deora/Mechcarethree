@@ -13,14 +13,23 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
+// const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+// const auth = getAuth(app);
+// const provider = new GoogleAuthProvider();
 
 // Optional: Analytics for browser
 let analytics = null;
 if (typeof window !== "undefined") {
   analytics = getAnalytics(app);
+}
+
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+// Optional: Disable verification for testing (DEV ONLY)
+if (window.location.hostname === "localhost") {
+  auth.settings.appVerificationDisabledForTesting = true;
 }
 
 export { auth, provider, analytics };
