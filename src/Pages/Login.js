@@ -15,9 +15,10 @@ const Login = () => {
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [confirmationResult, setConfirmationResult] = useState(null);
-  const [otpStatus, setOtpStatus] = useState(""); // ✅ for OTP message
+  const [otpStatus, setOtpStatus] = useState("");
+  const [sending, setSending] = useState(false); // avoid multiple clicks
 
-  // Google Login
+  // 🔐 Google Login
   const handleGoogleLogin = async () => {
     const provider = new GoogleAuthProvider();
     try {
@@ -31,7 +32,7 @@ const Login = () => {
     }
   };
 
-  // Setup Recaptcha (one time only)
+  // ⚙️ Setup Recaptcha (only once)
   const setupRecaptcha = () => {
     if (!window.recaptchaVerifier) {
       window.recaptchaVerifier = new RecaptchaVerifier(
@@ -39,10 +40,10 @@ const Login = () => {
         {
           size: "invisible",
           callback: (response) => {
-            console.log("Recaptcha solved ✅");
+            console.log("✅ Recaptcha solved");
           },
           "expired-callback": () => {
-            console.warn("Recaptcha expired");
+            console.warn("⚠️ Recaptcha expired");
           },
         },
         auth
@@ -50,14 +51,15 @@ const Login = () => {
     }
   };
 
-  // Send OTP
+  // 📲 Send OTP
   const sendOTP = async () => {
-    setOtpStatus(""); // clear previous
+    setOtpStatus("");
     if (!phone.startsWith("+91") || phone.length !== 13) {
-      setOtpStatus("❌ Please enter valid +91 number");
+      setOtpStatus("❌ Please enter a valid phone number (+91...)");
       return;
     }
 
+    setSending(true);
     try {
       setupRecaptcha();
       const appVerifier = window.recaptchaVerifier;
@@ -68,19 +70,26 @@ const Login = () => {
     } catch (error) {
       console.error("❌ Error sending OTP:", error);
       setOtpStatus("❌ Failed to send OTP: " + error.message);
+    } finally {
+      setSending(false);
     }
   };
 
-  // Verify OTP
+  // ✅ Verify OTP
   const verifyOTP = async () => {
+    if (!otp) {
+      setOtpStatus("❌ Please enter the OTP first");
+      return;
+    }
+
     try {
       if (!confirmationResult) {
-        setOtpStatus("❌ OTP not sent yet.");
+        setOtpStatus("❌ OTP not sent yet");
         return;
       }
 
       await confirmationResult.confirm(otp);
-      alert("✅ Phone verified!");
+      alert("✅ Phone number verified!");
       navigate("/Dashboard");
     } catch (error) {
       console.error("❌ Invalid OTP:", error);
@@ -88,7 +97,7 @@ const Login = () => {
     }
   };
 
-  // 🔄 Cleanup recaptcha on unmount
+  // 🧹 Cleanup recaptcha when component unmounts
   useEffect(() => {
     return () => {
       if (window.recaptchaVerifier) {
@@ -104,21 +113,23 @@ const Login = () => {
         <h2>🔧 Welcome to MechCare</h2>
         <p>Login securely</p>
 
-        {/* Google Login */}
+        {/* 🔐 Google Login */}
         <button className="login-button google-btn" onClick={handleGoogleLogin}>
           Continue with Google
         </button>
 
         <hr />
 
-        {/* Phone Login */}
+        {/* 📲 Phone OTP Login */}
         <input
           type="tel"
           placeholder="📱 Enter Phone Number (+91...)"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
         />
-        <button onClick={sendOTP}>Send OTP</button>
+        <button onClick={sendOTP} disabled={sending}>
+          {sending ? "Sending..." : "Send OTP"}
+        </button>
 
         {confirmationResult && (
           <>
@@ -132,7 +143,11 @@ const Login = () => {
           </>
         )}
 
-        {otpStatus && <p style={{ marginTop: "10px", color: otpStatus.startsWith("❌") ? "red" : "green" }}>{otpStatus}</p>}
+        {otpStatus && (
+          <p style={{ marginTop: "10px", color: otpStatus.startsWith("❌") ? "red" : "green" }}>
+            {otpStatus}
+          </p>
+        )}
 
         <div id="recaptcha-container"></div>
       </div>
