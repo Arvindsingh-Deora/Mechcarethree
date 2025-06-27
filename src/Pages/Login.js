@@ -32,17 +32,25 @@ const Login = () => {
 
   // Setup Recaptcha
   const setupRecaptcha = () => {
-    if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(
-        "recaptcha-container",
-        {
-          size: "invisible",
-          callback: () => sendOTP(),
-        },
-        auth
-      );
+  console.log("Recaptcha Setup: Auth is", auth);
+  if (!window.recaptchaVerifier) {
+    if (!auth) {
+      alert("Auth not initialized");
+      return;
     }
-  };
+    window.recaptchaVerifier = new RecaptchaVerifier(
+      "recaptcha-container",
+      {
+        size: "invisible",
+        callback: () => {
+          console.log("Recaptcha solved");
+        },
+      },
+      auth
+    );
+  }
+};
+
 
   // Send OTP
   const sendOTP = async () => {
@@ -70,6 +78,11 @@ const Login = () => {
       alert("Invalid OTP");
     }
   };
+
+  if (window.recaptchaVerifier) {
+  window.recaptchaVerifier.clear();
+}
+
 
   return (
     <div className="login-container">

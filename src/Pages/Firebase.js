@@ -1,5 +1,4 @@
-// src/Pages/Firebase.js
-import { initializeApp, getApps } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getAnalytics } from "firebase/analytics";
 
@@ -13,18 +12,15 @@ const firebaseConfig = {
   measurementId: "G-0PW0VSV0KX"
 };
 
-// Initialize Firebase App
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
 
-// ✅ Initialize Analytics (only on browser)
+auth.languageCode = "en";
+
 let analytics = null;
 if (typeof window !== "undefined") {
   analytics = getAnalytics(app);
 }
-
-// ✅ Auth and Provider
-const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
-auth.languageCode = "en";
 
 export { auth, provider, analytics };
