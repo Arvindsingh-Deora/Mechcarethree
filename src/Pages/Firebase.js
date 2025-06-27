@@ -1,3 +1,4 @@
+// src/firebase.js
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getAnalytics } from "firebase/analytics";
@@ -9,26 +10,24 @@ const firebaseConfig = {
   storageBucket: "mechcare-vnvyr.appspot.com",
   messagingSenderId: "82372060869",
   appId: "1:82372060869:web:0e0679f410141118ed32ac",
-  measurementId: "G-0PW0VSV0KX"
+  measurementId: "G-0PW0VSV0KX",
 };
 
-// Initialize Firebase
-// const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-// const auth = getAuth(app);
-// const provider = new GoogleAuthProvider();
+// ✅ Initialize Firebase first
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
-// Optional: Analytics for browser
+// ✅ Now safely initialize analytics (only in browser)
 let analytics = null;
 if (typeof window !== "undefined") {
   analytics = getAnalytics(app);
 }
 
-const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+// ✅ Initialize auth and provider
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-// Optional: Disable verification for testing (DEV ONLY)
-if (window.location.hostname === "localhost") {
+// ✅ Optional: For localhost testing only
+if (typeof window !== "undefined" && window.location.hostname === "localhost") {
   auth.settings.appVerificationDisabledForTesting = true;
 }
 
