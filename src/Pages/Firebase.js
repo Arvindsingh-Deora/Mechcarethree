@@ -1,6 +1,6 @@
 // src/Pages/Firebase.js
 import { initializeApp, getApps } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth"; // ✅ Add this line
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
@@ -13,11 +13,18 @@ const firebaseConfig = {
   measurementId: "G-0PW0VSV0KX"
 };
 
+// Initialize Firebase App
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 
+// ✅ Initialize Analytics (only on browser)
+let analytics = null;
+if (typeof window !== "undefined") {
+  analytics = getAnalytics(app);
+}
+
+// ✅ Auth and Provider
 const auth = getAuth(app);
-const provider = new GoogleAuthProvider(); // ✅ Create Google provider
+const provider = new GoogleAuthProvider();
+auth.languageCode = "en";
 
-auth.languageCode = "en"; // Required for Recaptcha
-
-export { auth, provider }; // ✅ Export both
+export { auth, provider, analytics };
