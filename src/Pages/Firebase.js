@@ -1,3 +1,4 @@
+// src/Pages/Firebase.js
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getAnalytics } from "firebase/analytics";
@@ -9,18 +10,13 @@ const firebaseConfig = {
   storageBucket: "mechcare-vnvyr.appspot.com",
   messagingSenderId: "82372060869",
   appId: "1:82372060869:web:0e0679f410141118ed32ac",
-  measurementId: "G-0PW0VSV0KX"
+  measurementId: "G-0PW0VSV0KX",
 };
 
-// Initialize Firebase
-const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-// Optional: Analytics for browser
-let analytics = null;
-if (typeof window !== "undefined") {
-  analytics = getAnalytics(app);
-}
+auth.languageCode = "en";
 
-export { auth, provider, analytics };
+export { auth, provider };
