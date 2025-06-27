@@ -4,11 +4,8 @@ import {
   signInWithPopup,
   RecaptchaVerifier,
   signInWithPhoneNumber,
-  getAuth,
-  PhoneAuthProvider,
-  signInWithCredential,
 } from "firebase/auth";
-import { auth } from "../Pages/Firebase";
+import { auth } from "./Firebase";
 import { useNavigate } from "react-router-dom";
 import "../Style/Login.css";
 
@@ -18,93 +15,91 @@ const Login = () => {
   const [otp, setOtp] = useState("");
   const [confirmationResult, setConfirmationResult] = useState(null);
   const [otpStatus, setOtpStatus] = useState("");
-  const [sending, setSending] = useState(false);
-  const [verifying, setVerifying] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  // ✅ Google Login
+  // Google Login
   const handleGoogleLogin = async () => {
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      alert(`🎉 Welcome ${user.displayName}`);
+      alert(`🎉 Welcome ${result.user.displayName}`);
       navigate("/Dashboard");
-    } catch (error) {
-      console.error("❌ Google login failed:", error);
-      alert("Login failed: " + error.message);
+    } catch (err) {
+      console.error("Google login failed:", err);
+      alert("Login failed: " + err.message);
     }
   };
 
-  // ✅ Setup invisible reCAPTCHA tied to button
+  // Setup reCAPTCHA (widget)
   const setupRecaptcha = () => {
     if (!window.recaptchaVerifier) {
       window.recaptchaVerifier = new RecaptchaVerifier(
-        auth,
-        "sign-in-button",
+        "recaptcha-container",
         {
-          size: "invisible",
+          size: "normal",
           callback: () => {
             console.log("✅ reCAPTCHA solved");
           },
           "expired-callback": () => {
             console.warn("⚠️ reCAPTCHA expired");
           },
-        }
+        },
+        auth
       );
+
+      window.recaptchaVerifier.render().then((widgetId) => {
+        window.recaptchaWidgetId = widgetId;
+      });
     }
   };
 
-  // ✅ Send OTP
+  // Send OTP
   const sendOTP = async () => {
     setOtpStatus("");
     if (!phone.startsWith("+91") || phone.length !== 13) {
-      setOtpStatus("❌ Please enter a valid phone number starting with +91");
-      return;
+      return setOtpStatus("❌ Please enter valid +91 phone number.");
     }
 
-    setSending(true);
+    setLoading(true);
     try {
       setupRecaptcha();
       const appVerifier = window.recaptchaVerifier;
       const result = await signInWithPhoneNumber(auth, phone, appVerifier);
       setConfirmationResult(result);
       setOtpStatus("📨 OTP sent successfully!");
-    } catch (error) {
-      console.error("❌ OTP send error:", error);
-      setOtpStatus("❌ Failed to send OTP: " + error.message);
-
-      // 🔁 Reset reCAPTCHA if needed
+    } catch (err) {
+      console.error("❌ OTP error:", err);
+      setOtpStatus("❌ OTP not sent: " + err.message);
       try {
         window.recaptchaVerifier.render().then((widgetId) => {
           window.grecaptcha.reset(widgetId);
         });
       } catch (e) {
-        console.warn("Could not reset reCAPTCHA:", e);
+        console.warn("Couldn't reset reCAPTCHA:", e);
       }
     } finally {
-      setSending(false);
+      setLoading(false);
     }
   };
 
-  // ✅ Verify OTP
+  // Verify OTP
   const verifyOTP = async () => {
     if (!otp) return setOtpStatus("❌ Please enter the OTP.");
     if (!confirmationResult) return setOtpStatus("❌ OTP not sent yet.");
 
-    setVerifying(true);
+    setLoading(true);
     try {
       await confirmationResult.confirm(otp);
       alert("✅ Phone verified successfully!");
       navigate("/Dashboard");
-    } catch (error) {
-      console.error("❌ Invalid OTP:", error);
-      setOtpStatus("❌ Invalid OTP. Please try again.");
+    } catch (err) {
+      console.error("❌ Invalid OTP:", err);
+      setOtpStatus("❌ Invalid OTP");
     } finally {
-      setVerifying(false);
+      setLoading(false);
     }
   };
 
-  // 🧹 Clear recaptcha on unmount
   useEffect(() => {
     return () => {
       if (window.recaptchaVerifier) {
@@ -118,7 +113,7 @@ const Login = () => {
     <div className="login-container">
       <div className="login-card">
         <h2>🔧 Welcome to MechCare</h2>
-        <p>Login securely using Google or Phone</p>
+        <p>Login with Google or Phone</p>
 
         <button className="login-button google-btn" onClick={handleGoogleLogin}>
           Continue with Google
@@ -126,15 +121,14 @@ const Login = () => {
 
         <hr />
 
-        {/* PHONE LOGIN */}
         <input
           type="tel"
-          placeholder="📱 Enter Phone Number (+91...)"
+          placeholder="📱 Enter Phone (+91...)"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
         />
-        <button id="sign-in-button" onClick={sendOTP} disabled={sending}>
-          {sending ? "Sending..." : "Send OTP"}
+        <button onClick={sendOTP} disabled={loading}>
+          {loading ? "Sending..." : "Send OTP"}
         </button>
 
         {confirmationResult && (
@@ -145,18 +139,17 @@ const Login = () => {
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
             />
-            <button onClick={verifyOTP} disabled={verifying}>
-              {verifying ? "Verifying..." : "Verify OTP"}
+            <button onClick={verifyOTP} disabled={loading}>
+              {loading ? "Verifying..." : "Verify OTP"}
             </button>
           </>
         )}
 
-        {/* OTP STATUS */}
         {otpStatus && (
           <p
             style={{
-              marginTop: "10px",
               color: otpStatus.startsWith("❌") ? "red" : "green",
+              marginTop: "10px",
               fontWeight: 500,
             }}
           >
@@ -164,9 +157,7 @@ const Login = () => {
           </p>
         )}
 
-        <small style={{ color: "#888" }}>
-          You'll receive an SMS for verification. Standard carrier rates may apply.
-        </small>
+        <div id="recaptcha-container" style={{ marginTop: "15px" }}></div>
       </div>
     </div>
   );
