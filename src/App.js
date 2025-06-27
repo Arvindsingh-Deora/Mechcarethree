@@ -21,7 +21,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/Login" element={<Login />} /> {/* 👈 Add this */}
-          <Route path="/PhoneAuth" element={<PhoneAuth/>} /> {/* 👈 Add this */}
+         
           <Route path="/dashboard" element={<Dashboard />} />
           < Route path = "/Subscrption" element = { <Subscription />} />
           <Route path="/mechanics" element={<MechanicList />} />
