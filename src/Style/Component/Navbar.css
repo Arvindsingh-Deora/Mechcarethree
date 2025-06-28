@@ -175,6 +175,14 @@ body { background: var(--background-color); color: var(--text-color); min-height
   background:linear-gradient(45deg,#1557b0,#4b9dea);
   transform:scale(1.05);
 }
+.logout-button {
+  background: transparent;
+  border: none;
+  color: red;
+  font-weight: bold;
+  cursor: pointer;
+}
+
 
 /* How It Works */
 .how-it-works,
