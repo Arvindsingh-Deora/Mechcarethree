@@ -3,9 +3,6 @@ import React, { useState, useEffect } from "react";
 import {
   GoogleAuthProvider,
   signInWithPopup,
-  RecaptchaVerifier,
-  signInWithPhoneNumber,
-  getAuth
 } from "firebase/auth";
 import { auth } from "../Pages/Firebase";
 import { useNavigate } from "react-router-dom";
@@ -15,7 +12,7 @@ const Login = () => {
   const navigate = useNavigate();
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
-  const [confirmationResult, setConfirmationResult] = useState(null);
+  const [otpSent, setOtpSent] = useState(false);
   const [otpStatus, setOtpStatus] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -36,22 +33,7 @@ const Login = () => {
     }
   };
 
-  // ✅ Setup Invisible reCAPTCHA
-  const setupInvisibleRecaptcha = () => {
-    if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier("send-otp-btn", {
-        size: "invisible",
-        callback: (response) => {
-          console.log("Invisible reCAPTCHA solved:", response);
-          sendOTP();
-        },
-        "expired-callback": () => {
-          console.log("reCAPTCHA expired. Resetting...");
-        },
-      }, auth);
-    }
-  };
-
+  // ✅ Send OTP using Msg91
   const sendOTP = async () => {
     setOtpStatus("");
     if (!phone.startsWith("+91") || phone.length !== 13) {
@@ -59,33 +41,51 @@ const Login = () => {
     }
 
     setLoading(true);
-    setupInvisibleRecaptcha();
-
     try {
-      const appVerifier = window.recaptchaVerifier;
-      const result = await signInWithPhoneNumber(auth, phone, appVerifier);
-      setConfirmationResult(result);
-      setOtpStatus("✅ OTP sent to your phone!");
+      const backendPhone = phone.replace("+91", "");
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/send-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: backendPhone }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setOtpStatus("✅ OTP sent to your phone!");
+        setOtpSent(true);
+      } else {
+        setOtpStatus("❌ Failed: " + data.message);
+      }
     } catch (err) {
-      setOtpStatus("❌ Failed to send OTP: " + err.message);
+      setOtpStatus("❌ Error: " + err.message);
     } finally {
       setLoading(false);
     }
   };
 
+  // ✅ Verify OTP using Msg91
   const verifyOTP = async () => {
-    if (!otp || !confirmationResult) {
-      return setOtpStatus("❌ Enter OTP");
-    }
+    if (!otp) return setOtpStatus("❌ Enter OTP");
 
     setLoading(true);
     try {
-      await confirmationResult.confirm(otp);
-      localStorage.setItem("mechcare_phone", phone);
-      alert("✅ OTP Verified!");
-      navigate("/Dashboard");
-    } catch (error) {
-      setOtpStatus("❌ Invalid OTP");
+      const backendPhone = phone.replace("+91", "");
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: backendPhone, otp }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        localStorage.setItem("mechcare_phone", phone);
+        alert("✅ OTP Verified!");
+        navigate("/Dashboard");
+      } else {
+        setOtpStatus("❌ " + data.message);
+      }
+    } catch (err) {
+      setOtpStatus("❌ Error: " + err.message);
     } finally {
       setLoading(false);
     }
@@ -97,23 +97,25 @@ const Login = () => {
         <h2>🔧 Welcome to MechCare</h2>
         <p>Login via Google or Phone OTP</p>
 
+        {/* Google Login */}
         <button className="login-button google-btn" onClick={handleGoogleLogin}>
           Continue with Google
         </button>
 
         <hr />
 
+        {/* Phone Login */}
         <input
           type="tel"
           placeholder="+91 Phone Number"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
         />
-        <button id="send-otp-btn" onClick={sendOTP} disabled={loading}>
-          {loading ? "Sending..." : "Send OTP"}
+        <button onClick={sendOTP} disabled={loading || otpSent}>
+          {loading ? "Sending..." : otpSent ? "OTP Sent" : "Send OTP"}
         </button>
 
-        {confirmationResult && (
+        {otpSent && (
           <>
             <input
               type="text"
