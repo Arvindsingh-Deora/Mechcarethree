@@ -1,4 +1,6 @@
 // src/Pages/Login.js
+
+
 import React, { useState, useEffect } from "react";
 import {
   GoogleAuthProvider,
@@ -7,7 +9,7 @@ import {
 import { auth } from "../Pages/Firebase";
 import { useNavigate } from "react-router-dom";
 import "../Style/Login.css";
-
+console.log("Backend URL: ", process.env.REACT_APP_BACKEND_URL);
 const Login = () => {
   const navigate = useNavigate();
   const [phone, setPhone] = useState("");
